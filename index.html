@@ -1,1 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ôn tập Giữa kỳ I - Tin học 7</title>
+<style>
+  :root{
+    --brand:#2b5797;
+    --ok:#2e7d32;
+    --bad:#c62828;
+    --warn:#f9a825;
+    --card:#ffffff;
+    --bg:#f6f7fb;
+    --text:#1f2937;
+    --muted:#636e7b;
+    --border:#e6e8f0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --brand:#7aa2ff;
+      --ok:#7bd68c;
+      --bad:#ff7a7a;
+      --warn:#ffd36a;
+      --card:#111720;
+      --bg:#0b0f14;
+      --text:#e5e7eb;
+      --muted:#9aa4b2;
+      --border:#202733;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    margin:0; background:var(--bg); color:var(--text);
+    line-height:1.6; font-size:16px;
+  }
+  header{
+    padding:clamp(14px,2vw,24px) 16px;
+    text-align:center;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:10;
+  }
+  h1{margin:0; color:var(--brand); letter-spacing:.3px; font-size:clamp(20px,3.5vw,32px)}
+  .small{font-size:clamp(12px,1.8vw,14px); color:var(--muted)}
+  main{max-width:980px; margin:12px auto 90px; padding:0 clamp(10px,3vw,16px)}
+  h2{color:var(--brand); text-align:center; margin:22px 0 12px; font-size:clamp(18px,3vw,22px)}
 
+  .question{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:clamp(12px,2.6vw,18px);
+    margin:clamp(10px,2vw,14px) 0;
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+  }
+  .qtitle{font-weight:700; margin-bottom:8px; font-size:clamp(15px,2.6vw,18px)}
+  .options{margin-top:6px}
+  .options label{
+    display:flex; gap:10px; align-items:center;
+    padding:12px; margin:6px 0; border-radius:10px; cursor:pointer; user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .options input{ flex:0 0 auto; width:20px; height:20px; transform: scale(1.15); accent-color: var(--brand) }
+  .meta{font-size:clamp(12px,2vw,13px); color:var(--muted)}
+  .actions{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:24px 0 }
+  button{
+    padding:12px 16px; border-radius:10px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); cursor:pointer; font-weight:700; min-width:140px;
+  }
+  button.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+  button:focus-visible{outline:3px solid var(--brand); outline-offset:2px}
+
+  .result{ padding:10px 12px; background:var(--card); border:1px dashed var(--border); border-radius:10px; margin-top:8px; display:none; color:var(--muted) }
+  .correct{background: color-mix(in oklab, var(--ok) 15%, var(--card)); border-color: color-mix(in oklab, var(--ok) 40%, var(--border))}
+  .incorrect{background: color-mix(in oklab, var(--bad) 15%, var(--card)); border-color: color-mix(in oklab, var(--bad) 40%, var(--border))}
+  .mark-correct{outline:2px solid var(--ok); background: color-mix(in oklab, var(--ok) 12%, transparent)}
+  .mark-wrong{outline:2px solid var(--bad); background: color-mix(in oklab, var(--bad) 10%, transparent)}
+  .mark-missed{outline:2px dashed var(--warn); background: color-mix(in oklab, var(--warn) 12%, transparent)}
+
+  .scorebox{
+    position:sticky; bottom:0; background:var(--card);
+    border-top:1px solid var(--border);
+    padding:10px 14px; display:flex; gap:12px; align-items:center; justify-content:space-between
+  }
+  .score{font-weight:800; color:var(--brand); font-size:clamp(14px,2.4vw,18px)}
+  .legend{font-size:clamp(11px,2vw,13px); display:flex; gap:10px; align-items:center; color:var(--muted)}
+  .key{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:4px; border:1px solid var(--border)}
+  .k1{background: color-mix(in oklab, var(--ok) 30%, var(--card))}
+  .k2{background: color-mix(in oklab, var(--bad) 30%, var(--card))}
+  .k3{background: color-mix(in oklab, var(--warn) 40%, var(--card))}
+
+  @media (max-width: 640px){
+    .actions{padding:0 6px}
+    button{flex:1 1 100%; min-width:auto}
+    .options label{padding:14px}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>ĐỀ CƯƠNG ÔN TẬP GIỮA KÌ I - TIN HỌC 7</h1>
+    <div class="small">Chọn đáp án, bấm “Chấm điểm” để xem đúng/sai và đáp án gợi ý. Tối ưu cho điện thoại & máy tính.</div>
+  </header>
+  <main id="app">
+    <h2>PHẦN TRẮC NGHIỆM</h2>
+    <div id="mcqContainer"></div>
+
+    <h2>PHẦN TỰ LUẬN (CHỌN Ý ĐÚNG)</h2>
+    <p class="meta" style="text-align:center">Mỗi câu có 10 ý, chọn 5 ý đúng. Sau khi bấm “Chấm điểm”, hệ thống sẽ tô màu: <span class="key k1"></span> Đúng; <span class="key k2" style="margin-left:8px"></span> Sai; <span class="key k3" style="margin-left:8px"></span> Bỏ sót.</p>
+    <div id="multiContainer"></div>
+
+    <div class="actions">
+      <button class="primary" onclick="grade()">Chấm điểm</button>
+      <button onclick="resetAll(false)">Làm lại (giữ nguyên thứ tự)</button>
+      <button onclick="resetAll(true)">Làm lại + Xáo trộn</button>
+    </div>
+
+    <div class="scorebox">
+      <div class="legend">
+        <span class="key k1"></span> Đúng
+        <span class="key k2" style="margin-left:8px"></span> Sai
+        <span class="key k3" style="margin-left:8px"></span> Bỏ sót
+      </div>
+      <div class="score" id="score">Điểm: 0/31 câu</div>
+    </div>
+  </main>
+
+<script>
+// ===== DATA (rút từ đề Tin 7) =====
+const MCQS = [
+  {stem:"Thiết bị giúp đưa dữ liệu hình ảnh hoặc video vào máy tính là", options:["loa.","camera.","màn hình.","chuột."], answer:1},
+  {stem:"Thiết bị vừa là thiết bị nhập vừa là thiết bị xuất là", options:["màn hình cảm ứng.","bàn phím.","camera.","máy quét."], answer:0},
+  {stem:"Thiết bị KHÔNG phải là thiết bị vào là", options:["bàn phím","máy in","chuột","micro"], answer:1},
+  {stem:"Thiết bị có chức năng nhập dữ liệu để máy tính xử lí thông tin là", options:["màn hình.","loa.","bàn phím.","máy in."], answer:2},
+  {stem:"Thiết bị có chức năng hiển thị hình ảnh, văn bản, video – giúp người dùng nhận thông tin từ máy tính là", options:["màn hình.","camera.","chuột.","bàn phím."], answer:0},
+  {stem:"Sắp xếp thứ tự tắt máy tính an toàn khi đang làm việc với tệp trên thẻ nhớ", options:["4–2–3–1","1–2–3–4","2–1–3–4","3–2–1–4"], answer:0},
+  {stem:"Hành động có thể làm hỏng bàn phím máy tính là", options:["gõ phím nhẹ nhàng, đúng tư thế.","đặt đồ ăn và nước uống gần bàn phím.","che bàn phím khi không sử dụng.","vệ sinh bàn phím bằng khăn khô."], answer:1},
+  {stem:"Thao tác tắt máy tính một cách an toàn là", options:["sử dụng nút lệnh Restart của Windows.","nhấn giữ công tắc nguồn.","sử dụng nút lệnh Shutdown của Windows.","rút dây nguồn khỏi ổ cắm."], answer:2},
+  {stem:"Phần mềm được dùng để luyện gõ phím nhanh và chính xác là", options:["Paint.","Word.","Mario.","PowerPoint."], answer:2},
+  {stem:"Phần mềm KHÔNG là hệ điều hành", options:["Windows Explorer.","Windows 10.","Windows 7.","Windows Phone."], answer:0},
+  {stem:"Chương trình máy tính giúp em soạn thảo văn bản là", options:["Microsoft Windows.","Microsoft Paint.","Windows Defender.","Microsoft Word."], answer:3},
+  {stem:"Phần mềm Paint thuộc nhóm phần mềm", options:["đồ họa.","soạn thảo.","bảng tính.","luyện gõ phím."], answer:0},
+  {stem:"Sao lưu dữ liệu gồm có mấy loại?", options:["2","3","4","5"], answer:1},
+  {stem:"Hành động giúp bảo vệ dữ liệu quan trọng trên máy tính là", options:["sao lưu dữ liệu thường xuyên.","chỉ lưu trên màn hình chính.","chép dữ liệu vào USB của người khác.","xóa file cũ."], answer:0},
+  {stem:"Sao lưu từ xa là bản sao được", options:["lưu trên Google Drive.","đặt trên các thiết bị lưu trữ.","gửi mail cho người khác.","đặt ngoài máy tính chứa bản gốc."], answer:3},
+  {stem:"Mật khẩu mạnh nhất là", options:["123456789.","Nguyenanhkhoa.","MatKhau.","Hoa123@a."], answer:3},
+  {stem:"Chức năng KHÔNG phải của hệ điều hành là", options:["quản lí các tệp dữ liệu trên đĩa.","tạo và chỉnh sửa nội dung một tệp hình ảnh.","điều khiển các thiết bị vào ra.","quản lí giao diện giữa người dùng và máy tính."], answer:1},
+  {stem:"Hệ điều hành có chức năng chính là", options:["giúp người dùng chơi game và nghe nhạc.","điều khiển và quản lý hoạt động của các thiết bị trong máy tính.","dùng để soạn thảo văn bản.","dùng để vẽ hình ảnh."], answer:1},
+  {stem:"Phần mềm quan trọng nhất là", options:["hệ điều hành.","phần mềm tạo bài trình chiếu.","phần mềm soạn thảo văn bản.","phần mềm Mario."], answer:0},
+  {stem:"Tệp có phần mở rộng .docx thuộc loại tệp", options:["Microsoft Paint.","Microsoft Word.","Microsoft Excel.","Microsoft PowerPoint."], answer:1},
+  {stem:"Chương trình viết bằng Scratch có phần mở rộng là", options:[".mp3",".jpg",".sb2",".exe"], answer:2},
+  {stem:"Tệp hình ảnh có phần mở rộng là", options:[".mp3",".jpg",".sb2",".exe"], answer:1},
+  {stem:"Windows Media Player có thể mở được loại tệp nào?", options:[".mp3",".jpg",".txt",".exe"], answer:0},
+  {stem:"Phần mở rộng của chương trình máy tính là", options:[".docx, .rtf, .odt",".pptx, .ppt, .odp",".xlsx, .csv, .ods",".com, .exe, .msi"], answer:3},
+  {stem:"Trang mạng xã hội giúp kết bạn, chia sẻ hình ảnh, bài viết là", options:["Google.","Facebook.","Wikipedia.","VnExpress."], answer:1},
+  {stem:"YouTube chủ yếu được dùng để chia sẻ loại thông tin", options:["văn bản và bài viết.","video và âm thanh.","ảnh tĩnh.","tài liệu Word."], answer:1},
+  {stem:"Facebook cho phép người dùng trao đổi, chia sẻ chủ yếu về", options:["văn bản học thuật.","ảnh, bài viết, video và bình luận.","mã lập trình.","âm nhạc cổ điển."], answer:1},
+  {stem:"Chức năng quan trọng nhất của mạng xã hội là", options:["giúp người dùng chơi trò chơi trực tuyến.","kết nối và giao lưu giữa mọi người ở nhiều nơi.","tự động cập nhật phần mềm máy tính.","tăng tốc độ Internet."], answer:1},
+  {stem:"Đăng thông tin sai sự thật lên mạng xã hội có thể", options:["giúp mọi người hiểu rõ hơn sự việc.","gây hiểu lầm, hoang mang trong cộng đồng.","khiến mạng xã hội hoạt động nhanh hơn.","không ảnh hưởng gì."], answer:1},
+  {stem:"Hoạt động dễ gây nghiện Internet nhất là", options:["trò chơi trực tuyến.","trao đổi qua thư điện tử.","đọc tin tức.","học tập trực tuyến."], answer:0},
+  {stem:"Sử dụng thông tin cá nhân của người khác để đăng ký tài khoản hoặc mua hàng là", options:["việc làm bình thường.","cách học hỏi kỹ năng sử dụng mạng.","hành vi gian lận, có thể bị truy cứu trách nhiệm.","hành vi giúp đỡ người khác."], answer:2},
+];
+
+// 2 multi-select blocks (10 items, 5 đúng)
+const MULTIS = [
+  {title:"Tạo cây thư mục (Windows Explorer) để sắp xếp bài học/môn học khoa học.",
+   items:[
+    ["Dùng File Explorer để tạo thư mục mới (New Folder).",1],
+    ["Đặt tên thư mục rõ ràng theo môn/chương (ví dụ: Tin7_Bai1).",1],
+    ["Dùng kí tự đặc biệt như \\/:*?\"<>| trong tên thư mục.",0],
+    ["Tạo thư mục cha và các thư mục con theo cấp (môn → chương → bài).",1],
+    ["Để tất cả tệp trên Desktop cho nhanh.",0],
+    ["Gán biểu tượng/emojis vào tên nếu dễ nhớ (không lạm dụng).",1],
+    ["Đặt tên tệp kèm ngày tháng hoặc phiên bản (v1, v2…).",1],
+    ["Tạo shortcut thay vì thư mục thật để tiết kiệm dung lượng.",0],
+    ["Sao lưu cây thư mục định kỳ lên Google Drive/USB.",1],
+    ["Đặt mật khẩu chung cho toàn bộ máy thay vì từng tài khoản.",0],
+   ]},
+  {title:"Sử dụng Facebook để chia sẻ thông tin học tập an toàn và hiệu quả (vận dụng SGK).",
+   items:[
+    ["Tạo nhóm lớp/bài tập kín để đăng tài liệu.",1],
+    ["Kiểm tra nguồn tin, không chia sẻ tin chưa xác thực.",1],
+    ["Tôn trọng bản quyền; ghi nguồn khi trích dẫn.",1],
+    ["Cài đặt quyền riêng tư phù hợp cho từng bài đăng.",1],
+    ["Chia sẻ công khai thông tin cá nhân nhạy cảm.",0],
+    ["Không đăng/lan truyền thông tin sai sự thật.",1],
+    ["Sử dụng mật khẩu mạnh và bật xác thực hai lớp (2FA).",1],
+    ["Đăng bình luận xúc phạm để tăng tương tác.",0],
+    ["Không bấm vào liên kết lạ, file đính kèm đáng ngờ.",1],
+    ["Spam nhiều bài giống nhau để mọi người chú ý.",0],
+   ]},
+];
+
+// ===== RENDERING =====
+let currentMcqs = JSON.parse(JSON.stringify(MCQS)); // deep copy
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+function shuffleOptions(q){
+  const pairs = q.options.map((opt,i)=>({opt, idx:i}));
+  shuffle(pairs);
+  q.options = pairs.map(p=>p.opt);
+  q.answer = pairs.findIndex(p=>p.idx===q.answer);
+}
+function renderMcqs(){
+  const wrap = document.getElementById('mcqContainer');
+  wrap.innerHTML = '';
+  currentMcqs.forEach((q,qi)=>{
+    const card = document.createElement('div');
+    card.className='question';
+    card.id = `q${qi+1}`;
+    card.innerHTML = `<div class="qtitle">Câu ${qi+1}: ${q.stem}</div>`;
+    const opts = document.createElement('div');
+    opts.className='options';
+    q.options.forEach((text,oi)=>{
+      const lab = document.createElement('label');
+      const inp = document.createElement('input');
+      inp.type='radio'; inp.name=`q${qi+1}`; inp.dataset.correct = (oi===q.answer);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(' ' + 'ABCD'[oi] + '. ' + text));
+      opts.appendChild(lab);
+    });
+    const res = document.createElement('div');
+    res.className='result';
+    card.appendChild(opts);
+    card.appendChild(res);
+    wrap.appendChild(card);
+  });
+}
+function renderMultis(){
+  const wrap = document.getElementById('multiContainer');
+  wrap.innerHTML='';
+  MULTIS.forEach((q,qi)=>{
+    const card = document.createElement('div');
+    card.className='question';
+    card.id = `t${qi+1}`;
+    card.innerHTML = `<div class="qtitle">Câu ${qi+1}: ${q.title}</div>`;
+    const opts = document.createElement('div'); opts.className='options';
+    q.items.forEach(([text,ok])=>{
+      const lab=document.createElement('label');
+      const inp=document.createElement('input'); inp.type='checkbox'; inp.dataset.correct = !!ok;
+      lab.appendChild(inp); lab.appendChild(document.createTextNode(' '+text));
+      opts.appendChild(lab);
+    });
+    const res=document.createElement('div'); res.className='result';
+    card.appendChild(opts); card.appendChild(res);
+    wrap.appendChild(card);
+  });
+}
+renderMcqs(); renderMultis();
+
+// ===== GRADING & RESET =====
+function grade(){
+  let total=0, correct=0;
+  // MCQ
+  currentMcqs.forEach((q,idx)=>{
+    total++;
+    const card = document.getElementById('q'+(idx+1));
+    const chosen = card.querySelector('input[type=radio]:checked');
+    const res = card.querySelector('.result'); res.style.display='block';
+    card.querySelectorAll('label').forEach(l=>l.classList.remove('mark-correct','mark-wrong','mark-missed'));
+    card.querySelectorAll('input[type=radio]').forEach(inp=>{
+      if(inp.dataset.correct==='true'){ inp.parentElement.classList.add('mark-correct'); }
+    });
+    if(chosen && chosen.dataset.correct==='true'){
+      correct++; res.className='result correct'; res.textContent='Chính xác!';
+    }else if(chosen){
+      chosen.parentElement.classList.add('mark-wrong');
+      res.className='result incorrect'; res.textContent='Chưa đúng. Đáp án đúng đã được tô viền xanh.';
+    }else{
+      res.className='result incorrect'; res.textContent='Chưa chọn đáp án.';
+    }
+  });
+  // Multi
+  MULTIS.forEach((q,idx)=>{
+    total++;
+    const card = document.getElementById('t'+(idx+1));
+    const res = card.querySelector('.result'); res.style.display='block';
+    let ok=true, picked=false;
+    card.querySelectorAll('input[type=checkbox]').forEach(box=>{
+      const should = box.dataset.correct==='true';
+      const lab = box.parentElement;
+      lab.classList.remove('mark-correct','mark-wrong','mark-missed');
+      if(box.checked) picked=true;
+      if(box.checked && should){ lab.classList.add('mark-correct'); }
+      else if(box.checked && !should){ lab.classList.add('mark-wrong'); ok=false; }
+      else if(!box.checked && should){ lab.classList.add('mark-missed'); ok=false; }
+    });
+    if(ok && picked){ correct++; res.className='result correct'; res.textContent='Tuyệt vời: chọn đủ và đúng 5 ý.'; }
+    else{ res.className='result incorrect'; res.textContent='Cần chọn đúng 5 ý. Ô viền xanh là ý đúng, đỏ là sai, vàng là ý đúng bị bỏ sót.'; }
+  });
+  document.getElementById('score').textContent = `Điểm: ${correct}/${total} câu`;
+  window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+}
+function clearMarks(){
+  document.querySelectorAll('label').forEach(l=>l.classList.remove('mark-correct','mark-wrong','mark-missed'));
+  document.querySelectorAll('.result').forEach(r=>{r.style.display='none'; r.textContent=''; r.className='result';});
+  document.getElementById('score').textContent='Điểm: 0/31 câu';
+}
+function resetAll(withShuffle){
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(i=>i.checked=false);
+  clearMarks();
+  if(withShuffle){
+    currentMcqs = JSON.parse(JSON.stringify(MCQS));
+    shuffle(currentMcqs);
+    currentMcqs.forEach(shuffleOptions);
+    renderMcqs();
+    renderMultis();
+  } else {
+    currentMcqs = JSON.parse(JSON.stringify(MCQS));
+    renderMcqs();
+    renderMultis();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
